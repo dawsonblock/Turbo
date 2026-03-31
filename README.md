@@ -37,6 +37,7 @@ When evaluated locally, TurboQuant significantly outperforms standard dense cach
 | **TurboQuant** (k=2b, g=64) | 2-bit | 1024 | 0.48 MB | 464 | **4.4x smaller** |
 
 *Breakdown for 3-bit K, group=64, 1024 tokens:*
+
 - `k_packed`: ~229.4 kB
 - `resid_vals` + `resid_idx`: ~49.2 kB
 - `v_packed`: ~262.1 kB
