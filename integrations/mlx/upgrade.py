@@ -68,6 +68,7 @@ def upgrade_cache_list(
     prompt_cache: list,
     k_start: int | None,
     config: object,  # type: ignore
+    model_family: str | None = None,
 ) -> list[CacheUpgradeEvent]:
     """Promote KVCache entries to TurboQuantKCache when their offset threshold
     is reached.
@@ -87,6 +88,12 @@ def upgrade_cache_list(
         :class:`turboquant.config.TurboQuantConfig` governing compression.
         The production path always uses ``return_mode="view"``; the legacy
         ``return_mode`` kwarg is not surfaced here.
+    model_family:
+        Model architecture family (e.g. ``"llama"`` or ``"gemma"``).
+        Must be in :data:`SUPPORTED_FAMILIES` or
+        :class:`~turboquant.errors.UnsupportedModelError` is raised before
+        any cache is mutated.  Pass ``None`` only from exploratory code
+        paths that intentionally bypass the allowlist check.
 
     Returns
     -------
@@ -94,6 +101,19 @@ def upgrade_cache_list(
         One event per cache layer, in order.  Inspect ``ev.upgraded`` to
         see which layers were promoted this call.
     """
+    # Gate 2 — model allowlist.  Must be checked before any cache mutation.
+    if model_family is not None:
+        _normalized = model_family.lower().split("_")[0]  # e.g. "llama3" -> "llama"
+        if _normalized not in SUPPORTED_FAMILIES:
+            raise UnsupportedModelError(
+                f"Model family {model_family!r} is not supported by "
+                f"TurboQuant.  Supported families: "
+                f"{sorted(SUPPORTED_FAMILIES)}.  "
+                "To support a new family, wire its attention layer and "
+                "add runtime-cert coverage before adding it to "
+                "SUPPORTED_FAMILIES."
+            )
+
     # Lazy import to avoid circular deps and to keep this module importable
     # even if turboquant or mlx_lm is not fully initialised.
     from integrations.mlx.cache_adapter import TurboQuantConfig, TurboQuantKCache

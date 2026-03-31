@@ -121,7 +121,6 @@ def main() -> int:
     )
 
     results: list[dict] = []
-    all_pass = True
 
     for prompt in prompts:
         pid = prompt["id"]
@@ -167,9 +166,6 @@ def main() -> int:
             kl_pass = False
 
         row_pass = ppl_pass and kl_pass
-        if not row_pass:
-            all_pass = False
-
         status = "PASS" if row_pass else "FAIL"
         print(
             f"{status} | ppl_dense={ppl['dense_ppl']:.3f} "
