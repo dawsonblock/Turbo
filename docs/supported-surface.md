@@ -17,6 +17,17 @@ What this repository currently intends to support:
 - Llama-family integration path
 - Gemma-family integration path
 
+## Model Support Matrix
+
+| Model Architecture | Explicit Integration Tested | Support Status | Notes |
+| :--- | :--- | :--- | :--- |
+| Llama | Yes | **Supported** | Explicit memory/latency benchmarks validated local. |
+| Gemma | Yes | **Supported** | Explicit memory/latency benchmarks validated local. |
+| Mistral | No | Unsupported | Provided via upstream sync only. |
+| Qwen | No | Unsupported | Provided via upstream sync only. |
+| Phi | No | Unsupported | Provided via upstream sync only. |
+| &lt;All Others&gt; | No | Unsupported | Uncertified. Vended for structural scaffolding. |
+
 ## Not claimed
 
 What is **not** claimed by the current repository state:

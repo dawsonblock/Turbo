@@ -1,11 +1,15 @@
-# Vendored Upstream Boundary
+# Upstream mlx-lm Boundary
 
-This repository vendors a slice of `mlx_lm` to ensure seamless integration of the `TurboQuantKCache` and the custom streaming attention adapters without requiring users to fork `mlx_lm` themselves.
+TurboQuant maintains a vendored slice of `mlx-lm` (`integrations/mlx_lm`) solely for end-to-end framework scaffolding. It is NOT an integration package representing full compatibility. 
 
-## Important Distinctions
+## Supported Scope
+- Custom Cache implementation injected for local evaluation.
+- Attention logic modifications explicitly scoped to Llama and Gemma architectures executing locally on Apple Silicon via MLX Compiler paths.
 
-- **The vendored tree exists for integration and compatibility:** It provides the surrounding model weight loading and text generation harnesses required to evaluate TurboQuant on Apple Silicon.
-- **Presence of a model file does not imply TurboQuant support:** You will see dozens of model architecture definitions in `mlx_lm/models/`. Most of these are unmodified upstream files. Their presence simply keeps the parent library intact.
-- **Only explicitly listed model families are supported for TurboQuant runtime certification:** A model is only supported if it has been expressly wired and explicitly listed in `docs/supported-surface.md`. 
+## Unsupported
+- Upstream changes to other model architectures. 
+- Metal-specific generation tools (we strictly rely on the compiler).
+- VLM support or multimodality.
 
-Please refer to `docs/supported-surface.md` for the explicit list of officially supported architectures (currently Llama and Gemma).
+## Maintenance
+Changes to `mlx-lm` models other than Llama and Gemma are preserved strictly to maintain structural equivalence with upstream and are inherently uncertified by TurboQuant.
