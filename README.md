@@ -245,9 +245,26 @@ Sample output from `bench_memory_footprint.py`:
 
 ```text
 type                      bits  group  tokens   total_MB   bytes/tok   vs_dense
-dense (float16)             16     --    1024       2.10        2048       1.0×
-TurboQuant k=3b g=64         3     64    1024       0.52         512       4.0×
-TurboQuant k=2b g=64         2     64    1024       0.43         416       4.9×
+-------------------------------------------------------------------------------
+dense (float16)             16     --    1024       2.10        2048       1.0x
+TurboQuant k=4b g=64         4     64    1024       0.61         592       3.5x
+TurboQuant k=3b g=64         3     64    1024       0.57         560       3.7x
+TurboQuant k=2b g=64         2     64    1024       0.48         464       4.4x
+TurboQuant k=4b g=32         4     32    1024       0.67         656       3.1x
+TurboQuant k=3b g=32         3     32    1024       0.64         624       3.3x
+```
+
+Sample output from `bench_dense_vs_turboquant.py`:
+
+```text
+=== Dense vs TurboQuant: memory & encode latency ===
+
+config                          tokens  dense_MB    tq_MB   ratio   ms_dense    ms_tq
+-------------------------------------------------------------------------------------
+k_bits=4  k_group_size=64         1024      2.10     0.61     3.5x      0.422    2.474
+k_bits=3  k_group_size=64         1024      2.10     0.57     3.7x      0.477    1.532
+k_bits=2  k_group_size=64         1024      2.10     0.48     4.4x      0.448    0.960
+k_bits=3  k_group_size=32         1024      2.10     0.64     3.3x      0.400    0.854
 ```
 
 ---
