@@ -282,3 +282,79 @@ def build_run_result(
         "seed": seed,
         "temperature": temperature,
     }
+
+
+# ---------------------------------------------------------------------------
+# Quality-result schema helper (canonical; all quality gate scripts must use this)
+# ---------------------------------------------------------------------------
+
+QUALITY_RESULT_SCHEMA = "quality_eval_v1"
+
+
+def build_quality_prompt_result(
+    *,
+    prompt_id: str,
+    prompt_class: str,
+    n_tokens: int,
+    dense_ppl: float,
+    tq_ppl: float | None,
+    delta_ppl: float | None,
+    mean_kl: float,
+    max_kl: float,
+    ppl_pass: bool,
+    kl_pass: bool,
+    row_pass: bool,
+    ppl_seconds: float,
+    drift_seconds: float,
+) -> dict[str, Any]:
+    """Return one per-prompt quality result in the canonical schema."""
+    return {
+        "prompt_id": prompt_id,
+        "prompt_class": prompt_class,
+        "n_tokens": n_tokens,
+        "dense_ppl": round(dense_ppl, 6),
+        "tq_ppl": round(tq_ppl, 6) if tq_ppl is not None else None,
+        "delta_ppl": round(delta_ppl, 6) if delta_ppl is not None else None,
+        "mean_kl": round(mean_kl, 8),
+        "max_kl": round(max_kl, 8),
+        "ppl_pass": ppl_pass,
+        "kl_pass": kl_pass,
+        "pass": row_pass,
+        "ppl_seconds": round(ppl_seconds, 2),
+        "drift_seconds": round(drift_seconds, 2),
+    }
+
+
+def build_quality_result(
+    *,
+    environment: dict[str, Any],
+    model: str,
+    prompt_class: str,
+    thresholds: dict[str, float],
+    seed: int,
+    results: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Construct the canonical quality-eval artifact dict.
+
+    This is the single authority for quality artifact shape.  All quality
+    evaluation scripts must write through this function.  Any format that
+    does not come from this function is non-authoritative and must not be
+    used in release decisions.
+    """
+    n_pass = sum(1 for r in results if r["pass"])
+    n_fail = len(results) - n_pass
+    return {
+        "schema": QUALITY_RESULT_SCHEMA,
+        "timestamp": environment.get("timestamp", now_utc_iso()),
+        "commit": environment.get("git_commit", git_commit_or_unknown()),
+        "environment": environment,
+        "model": model,
+        "prompt_class": prompt_class,
+        "thresholds": thresholds,
+        "seed": seed,
+        "results": results,
+        "all_pass": n_fail == 0,
+        "n_prompts": len(results),
+        "n_pass": n_pass,
+        "n_fail": n_fail,
+    }

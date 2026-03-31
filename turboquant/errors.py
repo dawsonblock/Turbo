@@ -37,3 +37,13 @@ class TurboQuantCompatibilityError(TurboQuantError, TypeError):
     """Raised when there is an issue with mlx_lm upstream compatibility or adapter drift."""
 
     pass
+
+
+class UnsupportedModelError(TurboQuantError, ValueError):
+    """Raised when a model family is not in the supported allowlist.
+
+    TurboQuant formally supports Llama and Gemma only.  Any other model
+    family must not be passed through the production upgrade path.
+    """
+
+    pass

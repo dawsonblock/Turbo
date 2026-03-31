@@ -24,6 +24,11 @@ Typical usage
     #   'ratio': 4.0, 'n_layers': 18}
 """
 
+# EXPLORATORY — not part of certification or release proof.
+# These functions provide computation only.  They must be called through
+# benchmarks/runtime_cert/* to produce canonical certification artifacts.
+# Any output produced by calling these functions directly is non-authoritative.
+
 from __future__ import annotations
 
 import mlx.core as mx
