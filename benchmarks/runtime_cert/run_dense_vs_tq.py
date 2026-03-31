@@ -158,7 +158,8 @@ def run_single_generation(
         output_text = tokenizer.decode(tokens_out)
 
     except Exception as exc:
-        import traceback; traceback.print_exc()
+        import traceback
+        traceback.print_exc()
 
         status = "error"
         error_text = str(exc)

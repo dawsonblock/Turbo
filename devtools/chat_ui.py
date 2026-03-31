@@ -48,10 +48,13 @@ def bot_action(history, max_tokens, temperature, k_bits, group_size):
     for m in history[:-1]:
         if isinstance(m, dict):
             text_content = extract_text(m.get("content", ""))
-            if text_content: messages.append({"role": m.get("role", "user"), "content": text_content})
+            if text_content:
+                messages.append({"role": m.get("role", "user"), "content": text_content})
         else:
-            if m[0]: messages.append({"role": "user", "content": extract_text(m[0])})
-            if m[1]: messages.append({"role": "assistant", "content": extract_text(m[1])})
+            if m[0]:
+                messages.append({"role": "user", "content": extract_text(m[0])})
+            if m[1]:
+                messages.append({"role": "assistant", "content": extract_text(m[1])})
 
     # Safely get last user message
     last_item = history[-1]

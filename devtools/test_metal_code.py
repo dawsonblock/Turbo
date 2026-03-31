@@ -2,6 +2,7 @@ import os
 
 import mlx.core as mx
 
+import turboquant.experimental.kernels.metal.runtime as runtime
 from turboquant.config import TurboQuantConfig
 from turboquant.core.quantizer import GroupScalarQuantizer
 from turboquant.kernels.decode import decode_k_fallback
@@ -15,8 +16,6 @@ packed, scales = q.encode(data)
 mx.eval(packed, scales)
 
 d_head = 128
-
-import turboquant.experimental.kernels.metal.runtime as runtime
 
 runtime._kernel_source = """
     uint gid = thread_position_in_grid.x;

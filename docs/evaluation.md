@@ -25,7 +25,7 @@ print(drift)
 # Memory
 mem = memory_report(model, input_ids, turboquant_config=cfg)
 print(mem)
-# {'dense_cache_bytes': 2097152, 'tq_cache_bytes': 524288, 'ratio': 4.0, 'n_layers': 18}
+# {'dense_cache_bytes': 2097152, 'tq_cache_bytes': 573440, 'ratio': 3.7, 'n_layers': 18}
 ```text
 ---
 
@@ -72,7 +72,7 @@ forward pass.
 ```text
 ratio = dense_cache_bytes / tq_cache_bytes
 ```text
-A ratio of **4×** or higher is achievable with 3-bit K + 4-bit V at
+A ratio of **3.7×** or higher is achievable with 3-bit K + 4-bit V at
 `group_size=64` for sequences longer than 512 tokens.
 
 **API**:
