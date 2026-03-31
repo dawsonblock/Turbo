@@ -159,3 +159,50 @@ Observed cosine ~0.97 for 3-bit K + 4-bit V with Hadamard rotation.
    match reality (not fantasy)
 4. Commit the frozen thresholds
 5. Run certification again — this is the official pass/fail result
+
+---
+
+## Artifact authority
+
+All structured JSON artifacts are written by functions in
+`benchmarks/runtime_cert/utils.py`.  That module is the **single authority**
+for artifact schema.  Ad-hoc dicts or `print()` statements that write metric
+data outside this module are not accepted.
+
+Key builders:
+
+| Function | Schema constant | Artifact |
+|:---|:---|:---|
+| `build_run_result()` | `RUN_RESULT_SCHEMA = "run_result_v1"` | memory + latency |
+| `build_quality_result()` | `QUALITY_RESULT_SCHEMA = "quality_eval_v1"` | perplexity + KL |
+| `build_quality_prompt_result()` | (nested in quality artifact) | per-prompt row |
+
+---
+
+## Code invariants required during certification
+
+The following guards must be active and must not be bypassed:
+
+| Guard | File | Required behaviour |
+|:---|:---|:---|
+| **Gate 1** no silent dense fallback | `turboquant/runtime/attention.py` | `RuntimeError` if TQ cache is active but dense keys arrive.  `TQ_DEBUG_DENSE` must **not** be set in any certification environment. |
+| **Gate 2** model allowlist | `integrations/mlx/upgrade.py` | `UnsupportedModelError` for any model family not in `SUPPORTED_FAMILIES`. |
+| **Gate 3** CI artifact presence | `.github/workflows/apple-runtime-cert.yml` | CI fails if `certification_summary.json` is absent or `all_pass != true`. |
+
+If any of these invariants is missing or bypassed, the certification run is
+invalid regardless of exit code.
+
+---
+
+## Adding a new model family
+
+1. Wire `maybe_turboquant_attention()` into the model's attention layer
+   (see [docs/integration.md](integration.md)).
+2. Add the normalised family name to `SUPPORTED_FAMILIES` in
+   `integrations/mlx/upgrade.py`.
+3. Add prompt fixtures for each class to
+   `benchmarks/runtime_cert/prompts/`.
+4. Run `certify_apple_runtime.sh` end-to-end with the new model.
+5. Save resulting artifacts to `artifacts/runtime-cert/<timestamp>/`.
+6. Update the support table in
+   [docs/supported-surface.md](supported-surface.md) only after step 5.

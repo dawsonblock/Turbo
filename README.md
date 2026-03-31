@@ -129,7 +129,7 @@ cache = make_prompt_cache(model)
 # ... run prefill ...
 
 cfg    = TurboQuantConfig(k_bits=3, k_group_size=64, rotation="hadamard")
-events = upgrade_cache_list(cache, k_start=64, config=cfg)
+events = upgrade_cache_list(cache, k_start=64, config=cfg, model_family="llama")
 # decode loop continues with TurboQuant cache
 ```
 
@@ -269,10 +269,10 @@ k_bits=3  k_group_size=32         1024      2.10     0.64     3.3x      0.400   
 ## Evaluation
 
 ```python
-from mlx_lm.models.cache import TurboQuantConfig
+from turboquant.config import TurboQuantConfig
 from turboquant.eval import perplexity_report, drift_report, memory_report
 
-cfg = TurboQuantConfig(main_bits=3, group_size=64)
+cfg = TurboQuantConfig(k_bits=3, k_group_size=64)
 
 # Perplexity delta vs dense
 ppl = perplexity_report(model, input_ids, turboquant_config=cfg)
@@ -389,8 +389,7 @@ docs/
 | Benchmarks (memory / latency / streaming) | ✅ `benchmarks/` |
 | Architecture + integration docs | ✅ `docs/` |
 | Other architectures (Mistral, Phi, …) | ⬜ needs per-arch patch |
-| Fused Metal kernel (decode & dequant) | ✅ available via `TQ_USE_METAL=1` |
-| Native JIT compilation fallback | ✅ ~2x speedup `mx.compile(inner)` |
+| Fused Metal kernel (decode & dequant) | ⬜ experimental, not certified |
 | Perplexity / quality benchmarks at scale | ⬜ not yet measured |
 
 ---
@@ -399,7 +398,6 @@ docs/
 
 - **Quality gated but not yet measured at scale** — `run_quality_eval.py` enforces Δppl ≤ 0.5 and mean_kl ≤ 0.1 gates. Run `make certify-apple-runtime` with model weights to validate.
 - **Gemma- and Llama-family adapter paths exist in this repository. Actual support is established only by successful Apple-Silicon runtime certification for the specific model path being used.** Adding a new architecture is a [one-function change](docs/integration.md#adding-a-new-model-family).
-- **Metal execution requires explicit opt-in** — Apple Silicon native shaders are extremely fast (~1ms execution latency per 1024 token stream) but require opt-in by setting `TQ_USE_METAL=1`. Core native bindings have been aggressively optimized via `mx.compile` for default fallback paths yielding double the fallback speed.
 - **Hadamard is O(d²)** — not a fast butterfly transform. For very large head-dims, `rotation="identity"` is faster with marginally worse compression.
 
 ---

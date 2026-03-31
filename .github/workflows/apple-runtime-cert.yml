@@ -123,6 +123,29 @@ jobs:
           path: artifacts/runtime-cert/
           retention-days: 90
 
+      # Gate 3 — artifact presence + all_pass=true check.
+      # Fails the job if no certification_summary.json is produced or if
+      # it reports all_pass=false.  This prevents a silent green CI on a
+      # broken certify script.
+      - name: Verify certification artifact
+        if: always()
+        run: |
+          CERT_SUMMARY=$(find artifacts/runtime-cert -name "certification_summary.json" 2>/dev/null | head -1)
+          if [ -z "$CERT_SUMMARY" ]; then
+            echo "GATE 3 FAIL: no certification_summary.json found under artifacts/runtime-cert/"
+            exit 1
+          fi
+          ALL_PASS=$(python3 -c "
+          import json, sys
+          d = json.load(open('$CERT_SUMMARY'))
+          print(str(d.get('all_pass', False)).lower())
+          ")
+          if [ "$ALL_PASS" != "true" ]; then
+            echo "GATE 3 FAIL: certification_summary.json reports all_pass=false"
+            exit 1
+          fi
+          echo "GATE 3 PASS: $(basename $CERT_SUMMARY) verified — all_pass=true"
+
       - name: Model smoke tests
         if: env.TQ_TEST_LLAMA_MODEL != '' || env.TQ_TEST_GEMMA_MODEL != ''
         run: |

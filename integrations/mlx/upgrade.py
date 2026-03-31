@@ -103,7 +103,8 @@ def upgrade_cache_list(
     """
     # Gate 2 — model allowlist.  Must be checked before any cache mutation.
     if model_family is not None:
-        _normalized = model_family.lower().split("_")[0]  # e.g. "llama3" -> "llama"
+        # Normalise "llama3_1" -> "llama", "gemma2" -> "gemma", etc.
+        _normalized = model_family.lower().split("_")[0].rstrip("0123456789")
         if _normalized not in SUPPORTED_FAMILIES:
             raise UnsupportedModelError(
                 f"Model family {model_family!r} is not supported by "
