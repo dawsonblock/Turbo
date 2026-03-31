@@ -50,9 +50,6 @@ class TurboQuantConfig:
     scale_dtype: Literal["float16", "bfloat16"] = "float16"
     v_scale_dtype: Literal["float16", "bfloat16"] = "float16"
 
-    # ── Deployment ───────────────────────────────────────────────────────────
-    mode: Literal["research", "fast", "kernel"] = "research"
-
     def __post_init__(self) -> None:
         if self.k_bits < 2 or self.k_bits > 8:
             raise TurboQuantConfigError(f"k_bits must be in [2, 8], got {self.k_bits}")

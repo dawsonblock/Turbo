@@ -23,7 +23,7 @@ def test_memory_ratio_stable():
 
 
 def test_no_full_decode_allocation():
-    cfg = TurboQuantConfig(k_bits=3, k_group_size=64, residual_topk=2, mode="fast")
+    cfg = TurboQuantConfig(k_bits=3, k_group_size=64, residual_topk=2)
     comp = KVCompressor(cfg)
 
     B, H, D = 1, 1, 64

@@ -55,6 +55,11 @@ def require_mlx(feature: str = "this feature") -> None:
         Human-readable label inserted into the error message, e.g.
         ``"KVCompressor"`` or ``"calibrate()"``.
     """
+    if not is_apple_silicon():
+        raise RuntimeError(
+            "TurboQuant compiler paths are formally supported exclusively "
+            "on Apple Silicon running MacOS."
+        )
     if not has_mlx():
         raise ImportError(
             f"TurboQuant: {feature} requires the `mlx` package, which is only "
