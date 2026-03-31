@@ -1,5 +1,7 @@
 # Release checklist
 
+TurboQuant is a research-grade KV-cache compression package for Apple-Silicon MLX inference. The supported runtime path is local Apple-Silicon validation for selected Llama-family and Gemma-family models. Custom Metal kernels are experimental and not part of the default supported runtime.
+
 This is the minimum bar for calling a tagged snapshot technically credible. It is a release gate, not a wish list.
 
 ## Static gate

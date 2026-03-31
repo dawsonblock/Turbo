@@ -19,10 +19,7 @@
 TurboQuant compresses the KV cache of transformer models running on Apple Silicon via [mlx-lm](https://github.com/ml-explore/mlx-lm). It targets memory reduction first. End-to-end latency depends on model, shape, and decode length, and is not publicly certified by generic CI.
 
 > **⚠️ Current status:** Serious prototype.
-> Gemma- and Llama-family adapter paths exist in the current repository, but runtime support is only established by local Apple-Silicon validation.
-> Compression quality (perplexity impact) has not been measured at scale.
-> TurboQuant currently supports a narrow Apple-Silicon MLX runtime path for selected models, with package build and static validation available more broadly.
-> Custom Metal kernel integration remains experimental and is not part of the supported default runtime.
+> TurboQuant is a research-grade KV-cache compression package for Apple-Silicon MLX inference. The supported runtime path is local Apple-Silicon validation for selected Llama-family and Gemma-family models. Custom Metal kernels are experimental and not part of the default supported runtime.
 > Supported surface is documented in [docs/supported-surface.md](docs/supported-surface.md). Release gating is documented in [docs/release-checklist.md](docs/release-checklist.md).
 
 ### 🚀 **Illustrative local memory examples**

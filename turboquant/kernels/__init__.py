@@ -1,15 +1,19 @@
 # turboquant/kernels
 #
 # Platform: Apple Silicon (MLX / Metal)
-# Status:   vectorised MLX ops ARE the kernel layer.
+# Status:   vectorised/JIT MLX ops ARE the supported kernel layer.
 #
 # ── What this directory is for ─────────────────────────────────────────────
 #
-# On CUDA/Triton, custom kernels would live here.  On Apple Silicon we compile
-# to Metal via MLX's XLA-style compiler.  The vectorised pack / unpack /
-# quantise ops in turboquant/core/quantizer.py are already dispatched as fused
-# Metal kernels by the MLX runtime — no hand-written shaders are needed for
-# the current performance targets.
+# On CUDA/Triton, custom kernels would live here. On Apple Silicon, the
+# default supported runtime uses MLX-backed vectorized/JIT paths.
+# handwritten Metal or raw shader paths are experimental only and no release
+# claims depend on them. They exist in turboquant/experimental/kernels/metal
+# but are NOT part of the supported path.
+#
+# The vectorised pack / unpack / quantise ops in turboquant/core/quantizer.py
+# are dispatched as MLX ops — no hand-written shaders are part of the core
+# package.
 #
 # ── Current hotspot latency (M-series, bs=1, 2-head Gemma) ─────────────────
 #
