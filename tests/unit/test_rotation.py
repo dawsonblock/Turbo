@@ -98,9 +98,9 @@ def test_rotation_round_trip(dim, rtype):
     x_rec = rot.inverse(y)
     mx.eval(x_rec)
     err = mx.max(mx.abs(x - x_rec)).item()
-    assert err < ATOL, (
-        f"Round-trip error for {rtype} dim={dim}: max abs err = {err:.2e}"
-    )
+    assert (
+        err < ATOL
+    ), f"Round-trip error for {rtype} dim={dim}: max abs err = {err:.2e}"
 
 
 def test_identity_is_noop():

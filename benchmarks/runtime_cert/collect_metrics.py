@@ -29,8 +29,12 @@ from benchmarks.runtime_cert.utils import (
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Aggregate runtime certification metrics")
-    p.add_argument("--input-dir", required=True, help="Directory with raw run JSON files")
-    p.add_argument("--output-dir", required=True, help="Directory for aggregate outputs")
+    p.add_argument(
+        "--input-dir", required=True, help="Directory with raw run JSON files"
+    )
+    p.add_argument(
+        "--output-dir", required=True, help="Directory for aggregate outputs"
+    )
     return p.parse_args()
 
 
@@ -77,23 +81,27 @@ def summarize_metrics(records: list[dict]) -> dict:
                 d_mem = _avg(r.get("peak_memory_bytes") for r in dense_runs)
                 t_mem = _avg(r.get("peak_memory_bytes") for r in tq_runs)
                 if d_mem and t_mem and d_mem > 0:
-                    memory_deltas.append({
-                        "model": model,
-                        "prompt_class": pc,
-                        "dense_peak_bytes": d_mem,
-                        "tq_peak_bytes": t_mem,
-                        "reduction_pct": round((1 - t_mem / d_mem) * 100, 1),
-                    })
+                    memory_deltas.append(
+                        {
+                            "model": model,
+                            "prompt_class": pc,
+                            "dense_peak_bytes": d_mem,
+                            "tq_peak_bytes": t_mem,
+                            "reduction_pct": round((1 - t_mem / d_mem) * 100, 1),
+                        }
+                    )
                 d_tps = _avg(r.get("tokens_per_second") for r in dense_runs)
                 t_tps = _avg(r.get("tokens_per_second") for r in tq_runs)
                 if d_tps and t_tps and d_tps > 0:
-                    speed_deltas.append({
-                        "model": model,
-                        "prompt_class": pc,
-                        "dense_tps": round(d_tps, 2),
-                        "tq_tps": round(t_tps, 2),
-                        "delta_pct": round((t_tps / d_tps - 1) * 100, 1),
-                    })
+                    speed_deltas.append(
+                        {
+                            "model": model,
+                            "prompt_class": pc,
+                            "dense_tps": round(d_tps, 2),
+                            "tq_tps": round(t_tps, 2),
+                            "delta_pct": round((t_tps / d_tps - 1) * 100, 1),
+                        }
+                    )
 
     overall_pass = failed == 0
 
@@ -102,14 +110,18 @@ def summarize_metrics(records: list[dict]) -> dict:
     MAX_SPEED_DEGRADATION_PCT = -25.0
 
     for m in memory_deltas:
-        if m['reduction_pct'] < MIN_MEMORY_REDUCTION_PCT:
+        if m["reduction_pct"] < MIN_MEMORY_REDUCTION_PCT:
             overall_pass = False
-            print(f"FAIL: Memory reduction {m['reduction_pct']}% < {MIN_MEMORY_REDUCTION_PCT}% for {m['model']}")
+            print(
+                f"FAIL: Memory reduction {m['reduction_pct']}% < {MIN_MEMORY_REDUCTION_PCT}% for {m['model']}"
+            )
 
     for s in speed_deltas:
-        if s['delta_pct'] < MAX_SPEED_DEGRADATION_PCT:
+        if s["delta_pct"] < MAX_SPEED_DEGRADATION_PCT:
             overall_pass = False
-            print(f"FAIL: Speed degradation {s['delta_pct']}% < {MAX_SPEED_DEGRADATION_PCT}% for {s['model']}")
+            print(
+                f"FAIL: Speed degradation {s['delta_pct']}% < {MAX_SPEED_DEGRADATION_PCT}% for {s['model']}"
+            )
 
     return {
         "total_runs": total,
@@ -182,9 +194,13 @@ def main() -> int:
     write_summary(output_dir, records, summary)
 
     if summary["overall_pass"]:
-        print(f"\nCERTIFICATION PASS — {summary['passed']}/{summary['total_runs']} runs succeeded")
+        print(
+            f"\nCERTIFICATION PASS — {summary['passed']}/{summary['total_runs']} runs succeeded"
+        )
     else:
-        print(f"\nCERTIFICATION FAIL — {summary['failed']}/{summary['total_runs']} runs failed")
+        print(
+            f"\nCERTIFICATION FAIL — {summary['failed']}/{summary['total_runs']} runs failed"
+        )
         return 1
 
     return 0

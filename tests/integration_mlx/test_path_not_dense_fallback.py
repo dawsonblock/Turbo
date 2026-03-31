@@ -104,7 +104,7 @@ class TestPathNotDenseFallback:
             keys=view,
             values=mx.zeros((B, H, 1, D)),  # unused in TQ path
             mask=None,
-            scale=D ** -0.5,
+            scale=D**-0.5,
             fallback=_fallback,
         )
         mx.eval(output)
@@ -133,7 +133,7 @@ class TestPathNotDenseFallback:
             keys=keys,
             values=values,
             mask=None,
-            scale=D ** -0.5,
+            scale=D**-0.5,
             fallback=_fallback,
         )
         mx.eval(output)
@@ -147,7 +147,7 @@ class TestPathNotDenseFallback:
         """turboquant_streaming_attention must return a valid tensor."""
         cache, view = compressor_with_data
         queries = mx.random.normal((B, H, 1, D))
-        scale = D ** -0.5
+        scale = D**-0.5
 
         output = turboquant_streaming_attention(queries, view, scale=scale)
         mx.eval(output)
@@ -172,7 +172,7 @@ class TestPathNotDenseFallback:
                 f"Decoded K block [{s}:{e}] is all zeros — "
                 "compression/decompression pipeline is not functioning"
             )
-            total_tokens += (e - s)
+            total_tokens += e - s
 
         assert total_tokens == cache.offset, (
             f"Block iteration covered {total_tokens} tokens but offset is "
@@ -189,9 +189,7 @@ class TestPathNotDenseFallback:
             view, _ = cache.update_and_fetch(keys, values)
             mx.eval(cache.k_packed)
 
-        assert any(
-            "TQ path active" in record.message for record in caplog.records
-        ), (
+        assert any("TQ path active" in record.message for record in caplog.records), (
             "No 'TQ path active' log record found. "
             "The logging instrumentation is missing or broken."
         )
@@ -210,13 +208,12 @@ class TestPathNotDenseFallback:
                 keys=view,
                 values=mx.zeros((B, H, 1, D)),
                 mask=None,
-                scale=D ** -0.5,
+                scale=D**-0.5,
                 fallback=_fallback,
             )
 
         assert any(
-            "TurboQuant streaming path" in record.message
-            for record in caplog.records
+            "TurboQuant streaming path" in record.message for record in caplog.records
         ), (
             "No 'TurboQuant streaming path' log record from attention dispatch. "
             "The dispatcher logging is missing."
@@ -230,7 +227,7 @@ class TestPathNotDenseFallback:
             k = mx.random.normal((B, H, 1, D))
             v = mx.random.normal((B, H, 1, D))
             view, _ = cache.update_and_fetch(k, v)
-            assert isinstance(view, TurboQuantKeysView), (
-                f"Step {i}: update returned {type(view).__name__}, not view"
-            )
+            assert isinstance(
+                view, TurboQuantKeysView
+            ), f"Step {i}: update returned {type(view).__name__}, not view"
             assert view.end == 32 + i + 1

@@ -100,10 +100,12 @@ class TestStreamingAttentionEquivalence:
 
         return cache, view, keys, values, queries
 
-    def test_streaming_attention_close_to_dense(self, controlled_state, default_tq_config):
+    def test_streaming_attention_close_to_dense(
+        self, controlled_state, default_tq_config
+    ):
         """TurboQuant streaming attention output stays close to dense."""
         cache, view, keys_orig, values_orig, queries = controlled_state
-        scale = D ** -0.5
+        scale = D**-0.5
 
         # Dense reference: apply same rotation to keys and queries
         q_rot = cache.rotate_queries(queries)
@@ -129,15 +131,15 @@ class TestStreamingAttentionEquivalence:
         print(f"  mean_abs_error    = {mean_abs:.6f}")
         print(f"  max_abs_error     = {max_abs:.6f}")
 
-        assert cosine >= MIN_COSINE_SIMILARITY, (
-            f"Cosine similarity {cosine:.6f} < threshold {MIN_COSINE_SIMILARITY}"
-        )
-        assert mean_abs <= MAX_MEAN_ABS_ERROR, (
-            f"Mean absolute error {mean_abs:.6f} > threshold {MAX_MEAN_ABS_ERROR}"
-        )
-        assert max_abs <= MAX_MAX_ABS_ERROR, (
-            f"Max absolute error {max_abs:.6f} > threshold {MAX_MAX_ABS_ERROR}"
-        )
+        assert (
+            cosine >= MIN_COSINE_SIMILARITY
+        ), f"Cosine similarity {cosine:.6f} < threshold {MIN_COSINE_SIMILARITY}"
+        assert (
+            mean_abs <= MAX_MEAN_ABS_ERROR
+        ), f"Mean absolute error {mean_abs:.6f} > threshold {MAX_MEAN_ABS_ERROR}"
+        assert (
+            max_abs <= MAX_MAX_ABS_ERROR
+        ), f"Max absolute error {max_abs:.6f} > threshold {MAX_MAX_ABS_ERROR}"
 
     def test_multiple_blocks_converge(self, default_tq_config):
         """Attention over multiple blocks (large T_kv) stays bounded."""
@@ -159,7 +161,7 @@ class TestStreamingAttentionEquivalence:
         cache = KVCompressor(cfg, layer_id=0)
         view, _ = cache.update_and_fetch(keys, values)
 
-        scale = D ** -0.5
+        scale = D**-0.5
         q_rot = cache.rotate_queries(queries)
 
         tq_out = _streaming_softmax_attention(q_rot, view, scale=scale)
@@ -189,7 +191,7 @@ class TestStreamingAttentionEquivalence:
     def test_output_shape_is_correct(self, controlled_state, default_tq_config):
         """Streaming attention returns [B, H_q, L_q, D]."""
         cache, view, _, _, queries = controlled_state
-        scale = D ** -0.5
+        scale = D**-0.5
 
         q_rot = cache.rotate_queries(queries)
         tq_out = _streaming_softmax_attention(q_rot, view, scale=scale)

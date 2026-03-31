@@ -45,7 +45,9 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--model", required=True, help="HuggingFace model ID")
     p.add_argument("--prompt-file", required=True, help="Path to a .jsonl prompt file")
     p.add_argument("--prompt-class", required=True, choices=["short", "medium", "long"])
-    p.add_argument("--output-dir", required=True, help="Directory for raw JSON artifacts")
+    p.add_argument(
+        "--output-dir", required=True, help="Directory for raw JSON artifacts"
+    )
     p.add_argument("--max-new-tokens", type=int, default=64)
     p.add_argument("--temperature", type=float, default=0.0)
     p.add_argument("--seed", type=int, default=42)
@@ -55,7 +57,9 @@ def _parse_args() -> argparse.Namespace:
         default="both",
         help="Run mode(s)",
     )
-    p.add_argument("--turboquant-config-json", default=None, help="Path to TQ config JSON override")
+    p.add_argument(
+        "--turboquant-config-json", default=None, help="Path to TQ config JSON override"
+    )
     return p.parse_args()
 
 
@@ -142,7 +146,11 @@ def run_single_generation(
         t0 = time.perf_counter()
 
         first_token_time = None
-        sampler = (lambda x: mx.random.categorical(x * (1.0 / temperature))) if temperature > 0 else (lambda x: mx.argmax(x, axis=-1))
+        sampler = (
+            (lambda x: mx.random.categorical(x * (1.0 / temperature)))
+            if temperature > 0
+            else (lambda x: mx.argmax(x, axis=-1))
+        )
         for token, _ in generate_step(
             prompt_tokens, model, sampler=sampler, **gen_kwargs
         ):
@@ -159,6 +167,7 @@ def run_single_generation(
 
     except Exception as exc:
         import traceback
+
         traceback.print_exc()
 
         status = "error"

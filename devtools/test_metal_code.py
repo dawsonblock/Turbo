@@ -8,7 +8,14 @@ from turboquant.core.quantizer import GroupScalarQuantizer
 from turboquant.kernels.decode import decode_k_fallback
 
 os.environ["TQ_USE_METAL"] = "1"
-cfg = TurboQuantConfig(k_bits=3, k_group_size=64, residual_topk=0, v_bits=4, v_group_size=64, mode="research")
+cfg = TurboQuantConfig(
+    k_bits=3,
+    k_group_size=64,
+    residual_topk=0,
+    v_bits=4,
+    v_group_size=64,
+    mode="research",
+)
 
 q = GroupScalarQuantizer(n_bits=3, group_size=64)
 data = mx.random.normal((1, 8, 256, 128))
@@ -58,6 +65,7 @@ runtime._kernel_source = """
 """
 runtime._kernels = {}
 
+
 def decode_k_metal_test(
     packed_k: mx.array,
     scales: mx.array,
@@ -98,21 +106,22 @@ def decode_k_metal_test(
             ("GROUP_SIZE", config.k_group_size),
             ("TOPK", config.residual_topk),
             ("N_GROUPS", n_groups),
-            ("N_WORDS", n_words)
+            ("N_WORDS", n_words),
         ],
         grid=grid,
         threadgroup=threadgroup,
         output_shapes=[out_shape],
         output_dtypes=[mx.float16],
-        stream=mx.gpu
+        stream=mx.gpu,
     )
 
     return out[0]
+
 
 out_fallback = decode_k_fallback(packed, scales, None, None, cfg, d_head)
 out_metal = decode_k_metal_test(packed, scales, None, None, cfg, d_head)
 mx.eval(out_fallback, out_metal)
 
 print("Max diff:", mx.max(mx.abs(out_fallback - out_metal)))
-print("fallback:", out_fallback[0,0,0,:5])
-print("metal:", out_metal[0,0,0,:5])
+print("fallback:", out_fallback[0, 0, 0, :5])
+print("metal:", out_metal[0, 0, 0, :5])

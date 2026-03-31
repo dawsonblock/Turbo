@@ -164,7 +164,9 @@ def _streaming_softmax_attention(
         logger.warning(
             "NaN detected in streaming attention output "
             "(view %d–%d, H_q=%d). Clamping to zero.",
-            keys_view.start, keys_view.end, H_q,
+            keys_view.start,
+            keys_view.end,
+            H_q,
         )
         out = mx.where(mx.isnan(out), mx.zeros_like(out), out)
 
@@ -250,13 +252,15 @@ def maybe_turboquant_attention(
     """
     if isinstance(keys, TurboQuantKeysView):
         logger.debug(
-            "attention dispatch: TurboQuant streaming path  "
-            "(view %d–%d, H_q=%d)",
-            keys.start, keys.end, queries.shape[1],
+            "attention dispatch: TurboQuant streaming path  " "(view %d–%d, H_q=%d)",
+            keys.start,
+            keys.end,
+            queries.shape[1],
         )
         return turboquant_streaming_attention(queries, keys, scale=scale)
     logger.debug(
         "attention dispatch: dense SDPA fallback  (H_q=%d, T_k=%d)",
-        queries.shape[1], keys.shape[2],
+        queries.shape[1],
+        keys.shape[2],
     )
     return fallback(queries, keys, values, cache=cache, scale=scale, mask=mask)

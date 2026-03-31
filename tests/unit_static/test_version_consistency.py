@@ -10,17 +10,20 @@ def test_version_consistency():
         pyproject_content = f.read()
 
     # Find version = "0.2.2" in pyproject.toml
-    version_line = next(line for line in pyproject_content.splitlines() if line.startswith("version ="))
+    version_line = next(
+        line for line in pyproject_content.splitlines() if line.startswith("version =")
+    )
     pyproject_version = version_line.split("=")[1].strip().strip('"').strip("'")
 
     # Read __init__.py manually to avoid import side-effects or just import it
     # since we already verified it's safe without MLX.
-    sys.modules['mlx'] = None
-    sys.modules['mlx.core'] = None
+    sys.modules["mlx"] = None
+    sys.modules["mlx.core"] = None
 
     try:
         import turboquant
+
         assert turboquant.__version__ == pyproject_version
     finally:
-        sys.modules.pop('mlx', None)
-        sys.modules.pop('mlx.core', None)
+        sys.modules.pop("mlx", None)
+        sys.modules.pop("mlx.core", None)

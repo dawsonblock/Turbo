@@ -295,8 +295,14 @@ class KVCompressor:
         logger.debug(
             "update_and_fetch: offset=%d→%d  B=%d H=%d T=%d D=%d  "
             "k_bits=%d v_enabled=%s  [TQ path active]",
-            prev, self.offset, B, H, T, D,
-            self.config.k_bits, self.config.v_enabled,
+            prev,
+            self.offset,
+            B,
+            H,
+            T,
+            D,
+            self.config.k_bits,
+            self.config.v_enabled,
         )
         return view, values
 

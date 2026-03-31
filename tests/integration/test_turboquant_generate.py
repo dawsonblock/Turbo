@@ -77,9 +77,9 @@ def test_noop_before_threshold():
         turboquant_v_enabled=True,
     )
 
-    assert isinstance(prompt_cache[0], KVCache), (
-        "Cache should remain KVCache when below threshold"
-    )
+    assert isinstance(
+        prompt_cache[0], KVCache
+    ), "Cache should remain KVCache when below threshold"
 
 
 def test_upgrades_at_threshold():
@@ -100,9 +100,9 @@ def test_upgrades_at_threshold():
         turboquant_v_enabled=True,
     )
 
-    assert isinstance(prompt_cache[0], TurboQuantKCache), (
-        "Cache should be upgraded to TurboQuantKCache at threshold"
-    )
+    assert isinstance(
+        prompt_cache[0], TurboQuantKCache
+    ), "Cache should be upgraded to TurboQuantKCache at threshold"
 
 
 def test_preserves_offset_and_state_shape():
@@ -126,9 +126,9 @@ def test_preserves_offset_and_state_shape():
 
     tq = prompt_cache[0]
     assert isinstance(tq, TurboQuantKCache)
-    assert tq.offset == original_offset, (
-        f"Offset should be preserved: got {tq.offset}, expected {original_offset}"
-    )
+    assert (
+        tq.offset == original_offset
+    ), f"Offset should be preserved: got {tq.offset}, expected {original_offset}"
     # keys storage should be populated
     assert tq.k_codes is not None, "Quantized key codes should exist after migration"
 
@@ -155,9 +155,9 @@ def test_idempotent():
     assert isinstance(first, TurboQuantKCache)
 
     maybe_turboquant_k_cache(prompt_cache, **kwargs)
-    assert prompt_cache[0] is first, (
-        "Second call should return the same TurboQuantKCache"
-    )
+    assert (
+        prompt_cache[0] is first
+    ), "Second call should return the same TurboQuantKCache"
     assert isinstance(prompt_cache[0], TurboQuantKCache)
 
 
@@ -214,9 +214,9 @@ def test_upgraded_cache_accepts_more_tokens():
     new_v = mx.zeros((1, heads, 1, head_dim))
     result_k, result_v = tq.update_and_fetch(new_k, new_v)
 
-    assert tq.offset == threshold + 1, (
-        f"Offset should be {threshold + 1} after one decode step, got {tq.offset}"
-    )
+    assert (
+        tq.offset == threshold + 1
+    ), f"Offset should be {threshold + 1} after one decode step, got {tq.offset}"
     # result_k carries at least the new token
     assert result_k is not None
     assert result_v is not None

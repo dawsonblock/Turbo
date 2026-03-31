@@ -20,19 +20,31 @@ def decode_k_block(
     Single entry point for all MLX-vectorized decode paths.
     Must return rotated K.
     """
-    if os.getenv("TQ_USE_METAL", "0") == "1" or getattr(config, "mode", "research") == "fast":
+    if (
+        os.getenv("TQ_USE_METAL", "0") == "1"
+        or getattr(config, "mode", "research") == "fast"
+    ):
         return decode_k_metal(packed_k, scales, resid_vals, resid_idx, config, d_head)
 
     return decode_k_fallback(packed_k, scales, resid_vals, resid_idx, config, d_head)
 
 
-
 _COMP_FALLBACK_CACHE = {}
 
-def _inner_decode_fallback(packed_k, scales, resid_vals, resid_idx, k_bits, k_group_size, d_pad, d_head, residual_topk, is_fast):
-    y_hat = dequantize_groups(
-        packed_k, scales, k_bits, k_group_size, d_pad
-    )
+
+def _inner_decode_fallback(
+    packed_k,
+    scales,
+    resid_vals,
+    resid_idx,
+    k_bits,
+    k_group_size,
+    d_pad,
+    d_head,
+    residual_topk,
+    is_fast,
+):
+    y_hat = dequantize_groups(packed_k, scales, k_bits, k_group_size, d_pad)
 
     if not is_fast:
         if residual_topk > 0 and resid_vals is not None and resid_idx is not None:
@@ -56,15 +68,23 @@ def decode_k_fallback(
 
     mode = getattr(config, "mode", "research")
     is_fast = mode == "fast"
-    key = (config.k_bits, config.k_group_size, d_pad, d_head, config.residual_topk, is_fast)
+    key = (
+        config.k_bits,
+        config.k_group_size,
+        d_pad,
+        d_head,
+        config.residual_topk,
+        is_fast,
+    )
 
     if key not in _COMP_FALLBACK_CACHE:
+
         def fn(pk, s, rv, ri):
             return _inner_decode_fallback(pk, s, rv, ri, *key)
+
         _COMP_FALLBACK_CACHE[key] = mx.compile(fn, shapeless=False)
 
     rv_arg = resid_vals if resid_vals is not None else mx.array(0)
     ri_arg = resid_idx if resid_idx is not None else mx.array(0)
 
     return _COMP_FALLBACK_CACHE[key](packed_k, scales, rv_arg, ri_arg)
-

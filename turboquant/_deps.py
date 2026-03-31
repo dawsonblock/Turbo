@@ -79,6 +79,7 @@ def check_mlx_version() -> None:
     try:
         # mlx.core.__version__ is the canonical source
         import mlx.core
+
         ver_str = getattr(mlx.core, "__version__", None)
     except Exception:
         pass
@@ -86,6 +87,7 @@ def check_mlx_version() -> None:
     if ver_str is None:
         try:
             import importlib.metadata
+
             ver_str = importlib.metadata.version("mlx")
         except Exception:
             return  # cannot determine version — allow

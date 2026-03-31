@@ -178,21 +178,23 @@ def main() -> int:
             f"({ppl_sec + drift_sec:.1f}s)"
         )
 
-        results.append({
-            "prompt_id": pid,
-            "prompt_class": args.prompt_class,
-            "n_tokens": n_tokens,
-            "dense_ppl": ppl["dense_ppl"],
-            "tq_ppl": ppl.get("tq_ppl"),
-            "delta_ppl": delta_ppl,
-            "mean_kl": mean_kl,
-            "max_kl": drift.get("max_kl", 0.0),
-            "ppl_pass": ppl_pass,
-            "kl_pass": kl_pass,
-            "pass": row_pass,
-            "ppl_seconds": round(ppl_sec, 2),
-            "drift_seconds": round(drift_sec, 2),
-        })
+        results.append(
+            {
+                "prompt_id": pid,
+                "prompt_class": args.prompt_class,
+                "n_tokens": n_tokens,
+                "dense_ppl": ppl["dense_ppl"],
+                "tq_ppl": ppl.get("tq_ppl"),
+                "delta_ppl": delta_ppl,
+                "mean_kl": mean_kl,
+                "max_kl": drift.get("max_kl", 0.0),
+                "ppl_pass": ppl_pass,
+                "kl_pass": kl_pass,
+                "pass": row_pass,
+                "ppl_seconds": round(ppl_sec, 2),
+                "drift_seconds": round(drift_sec, 2),
+            }
+        )
 
     # Write artifact
     summary = {

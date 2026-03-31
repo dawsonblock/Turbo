@@ -214,6 +214,8 @@ class TestLongContextModelSmoke:
         output = tokenizer.decode(tokens)
 
         assert len(tokens) > 0, "Long-context TQ generation produced no tokens"
-        print(f"\n  [long-llama-tq] {len(tokens)} tokens in {elapsed:.2f}s, "
-              f"prompt_len={len(input_ids)}")
+        print(
+            f"\n  [long-llama-tq] {len(tokens)} tokens in {elapsed:.2f}s, "
+            f"prompt_len={len(input_ids)}"
+        )
         print(f"  output: {output[:120]}...")

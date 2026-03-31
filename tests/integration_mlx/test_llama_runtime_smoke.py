@@ -113,7 +113,9 @@ class TestLlamaRuntimeSmoke:
 
         assert result["generated_tokens"] > 0, "Dense generation produced no tokens"
         assert len(result["output_text"].strip()) > 0, "Dense output is empty"
-        print(f"\n  [llama-dense] {result['generated_tokens']} tokens in {result['elapsed_seconds']:.2f}s")
+        print(
+            f"\n  [llama-dense] {result['generated_tokens']} tokens in {result['elapsed_seconds']:.2f}s"
+        )
         print(f"  output: {result['output_text'][:100]}...")
 
     def test_llama_turboquant_smoke(
@@ -134,7 +136,9 @@ class TestLlamaRuntimeSmoke:
         assert result["generated_tokens"] > 0, "TQ generation produced no tokens"
         assert len(result["output_text"].strip()) > 0, "TQ output is empty"
         assert result["turboquant_active"], "TurboQuant was not requested"
-        print(f"\n  [llama-tq] {result['generated_tokens']} tokens in {result['elapsed_seconds']:.2f}s")
+        print(
+            f"\n  [llama-tq] {result['generated_tokens']} tokens in {result['elapsed_seconds']:.2f}s"
+        )
         print(f"  output: {result['output_text'][:100]}...")
 
     def test_llama_turboquant_token_count(
@@ -155,7 +159,9 @@ class TestLlamaRuntimeSmoke:
 
         # Should generate close to target (may stop early on EOS)
         assert result["generated_tokens"] >= 1, "No tokens generated at all"
-        print(f"\n  [llama-tq-count] requested={target}, got={result['generated_tokens']}")
+        print(
+            f"\n  [llama-tq-count] requested={target}, got={result['generated_tokens']}"
+        )
 
     def test_llama_medium_prompt(
         self, llama_model_and_tokenizer, medium_prompt, decode_settings
@@ -173,5 +179,7 @@ class TestLlamaRuntimeSmoke:
         )
 
         assert result["generated_tokens"] > 0, "Medium prompt TQ generation failed"
-        print(f"\n  [llama-medium-tq] {result['generated_tokens']} tokens, "
-              f"prompt_len={result['prompt_length']}")
+        print(
+            f"\n  [llama-medium-tq] {result['generated_tokens']} tokens, "
+            f"prompt_len={result['prompt_length']}"
+        )

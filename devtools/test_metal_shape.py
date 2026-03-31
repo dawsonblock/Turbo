@@ -8,7 +8,14 @@ from turboquant.experimental.kernels.metal.runtime import decode_k_metal
 from turboquant.kernels.decode import decode_k_fallback
 
 os.environ["TQ_USE_METAL"] = "1"
-cfg = TurboQuantConfig(k_bits=3, k_group_size=64, residual_topk=0, v_bits=4, v_group_size=64, mode="research")
+cfg = TurboQuantConfig(
+    k_bits=3,
+    k_group_size=64,
+    residual_topk=0,
+    v_bits=4,
+    v_group_size=64,
+    mode="research",
+)
 
 q = GroupScalarQuantizer(n_bits=3, group_size=64)
 d_head = 96

@@ -36,6 +36,6 @@ def test_no_full_decode_allocation():
     # Ensure properties that check if it dynamically created a generic full flat K tensor are absent
     # Since streaming blocks chunks directly, size should equal the block size limit iterations.
     for s, e, k_blk, v_blk in comp.iter_rotated_kv_blocks(keys_view):
-        assert k_blk.shape[-2] <= cfg.block_tokens, (
-            "Allocated full dense chunk rather than block limit."
-        )
+        assert (
+            k_blk.shape[-2] <= cfg.block_tokens
+        ), "Allocated full dense chunk rather than block limit."

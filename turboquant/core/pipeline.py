@@ -75,7 +75,7 @@ class TurboQuantPipeline:
         self._v_pad: int | None = None
 
     def build(self, d_head_k: int, d_head_v: int) -> None:
-        """Pre-allocate all caches, quantizers, and rotations explicitely."""
+        """Pre-allocate all caches, quantizers, and rotations explicitly."""
         # Setup quantizers
         self._get_k_quant()
         if self.config.v_enabled:

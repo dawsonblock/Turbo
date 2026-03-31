@@ -60,9 +60,9 @@ def test_topk_round_trip_at_topk_positions(k, group_size):
             pos = int(idx_np.reshape(ng, k)[g, ki])
             orig = float(r_grp[g, pos])
             rec = float(hat_grp[g, pos])
-            assert abs(orig - rec) < 1e-3, (
-                f"group {g} position {pos}: orig={orig:.4f} rec={rec:.4f}"
-            )
+            assert (
+                abs(orig - rec) < 1e-3
+            ), f"group {g} position {pos}: orig={orig:.4f} rec={rec:.4f}"
 
 
 @pytest.mark.parametrize("k", [1, 2, 4])
@@ -81,9 +81,9 @@ def test_energy_capture(k):
 
     # k/group_size fraction of variance; allow 20 % slack
     expected_min = max(0.0, (k / group_size) * 0.8)
-    assert ratio >= expected_min, (
-        f"k={k}: captured {ratio:.3f} of energy, expected >= {expected_min:.3f}"
-    )
+    assert (
+        ratio >= expected_min
+    ), f"k={k}: captured {ratio:.3f} of energy, expected >= {expected_min:.3f}"
 
 
 def test_d_pad_must_be_divisible():

@@ -32,7 +32,9 @@ class TurboQuantConfig:
     group_size: int = 64
     rotation: str = "identity"  # "identity" | "hadamard" | "random_orthogonal"
     residual: str = "group_proj"  # legacy; ignored in production path
-    return_mode: str = "view"  # legacy metadata only; production path always returns a view
+    return_mode: str = (
+        "view"  # legacy metadata only; production path always returns a view
+    )
     block_tokens: int = 256
     scale_dtype: str = "float16"
     resid_scale_bits: int = 8  # legacy adapter metadata only

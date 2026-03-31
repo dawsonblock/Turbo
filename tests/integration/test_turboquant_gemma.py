@@ -81,8 +81,6 @@ def _make_kv(seq_len: int):
 # ─── 1. update_and_fetch – dequant mode ──────────────────────────────────────
 
 
-
-
 # ─── 2. update_and_fetch – view mode ─────────────────────────────────────────
 
 
@@ -94,9 +92,9 @@ def test_update_and_fetch_view_mode():
     k, v = _make_kv(PREFILL_LEN)
     result_k, result_v = tq.update_and_fetch(k, v)
 
-    assert isinstance(result_k, TurboQuantKeysView), (
-        f"Expected TurboQuantKeysView in view mode, got {type(result_k)}"
-    )
+    assert isinstance(
+        result_k, TurboQuantKeysView
+    ), f"Expected TurboQuantKeysView in view mode, got {type(result_k)}"
     assert result_k.end == PREFILL_LEN
     assert tq.offset == PREFILL_LEN
 
@@ -114,12 +112,12 @@ def test_state_roundtrip():
     meta = tq.meta_state
 
     tq2 = TurboQuantKCache.from_state(state_dict, meta)
-    assert tq2.offset == tq.offset, (
-        f"Offset mismatch after roundtrip: {tq2.offset} vs {tq.offset}"
-    )
-    assert tq2.config.block_tokens == tq.config.block_tokens, (
-        f"block_tokens mismatch: {tq2.config.block_tokens} vs {tq.config.block_tokens}"
-    )
+    assert (
+        tq2.offset == tq.offset
+    ), f"Offset mismatch after roundtrip: {tq2.offset} vs {tq.offset}"
+    assert (
+        tq2.config.block_tokens == tq.config.block_tokens
+    ), f"block_tokens mismatch: {tq2.config.block_tokens} vs {tq.config.block_tokens}"
 
 
 # ─── 4. block iterator covers all tokens ─────────────────────────────────────
@@ -142,9 +140,9 @@ def test_block_iterator_covers_all_tokens():
         assert v_blk.shape[-2] == e - s
         covered.extend(range(s, e))
 
-    assert sorted(covered) == list(range(PREFILL_LEN)), (
-        "Block iterator did not cover all token positions exactly once"
-    )
+    assert sorted(covered) == list(
+        range(PREFILL_LEN)
+    ), "Block iterator did not cover all token positions exactly once"
 
 
 # ─── 5. Gemma attention with standard KVCache ────────────────────────────────
@@ -160,9 +158,11 @@ def test_gemma_attention_with_kvcache():
     x = mx.zeros((BATCH, seq_len, HIDDEN_SIZE))
 
     out = attn(x, mask=None, cache=cache)
-    assert out.shape == (BATCH, seq_len, HIDDEN_SIZE), (
-        f"Unexpected output shape: {out.shape}"
-    )
+    assert out.shape == (
+        BATCH,
+        seq_len,
+        HIDDEN_SIZE,
+    ), f"Unexpected output shape: {out.shape}"
     assert cache.offset == seq_len
 
 
@@ -184,9 +184,11 @@ def test_gemma_attention_with_turboquant():
     decode_x = mx.zeros((BATCH, 1, HIDDEN_SIZE))
     out = attn(decode_x, mask=None, cache=tq)
 
-    assert out.shape == (BATCH, 1, HIDDEN_SIZE), (
-        f"Unexpected decode output shape: {out.shape}"
-    )
+    assert out.shape == (
+        BATCH,
+        1,
+        HIDDEN_SIZE,
+    ), f"Unexpected decode output shape: {out.shape}"
     assert tq.offset == PREFILL_LEN + 1
 
 
@@ -203,9 +205,9 @@ def test_incremental_decode():
     for step in range(1, 5):
         new_k, new_v = _make_kv(1)
         tq.update_and_fetch(new_k, new_v)
-        assert tq.offset == PREFILL_LEN + step, (
-            f"Offset should be {PREFILL_LEN + step} after {step} decode steps"
-        )
+        assert (
+            tq.offset == PREFILL_LEN + step
+        ), f"Offset should be {PREFILL_LEN + step} after {step} decode steps"
 
 
 # ─── 8. Storage dominated by 3-bit codes ─────────────────────────────────────
@@ -233,6 +235,6 @@ def test_storage_breakdown_keys():
 
     # The actual stored codes array exists and is correctly typed
     assert tq.k_codes is not None
-    assert tq.k_codes.dtype == mx.uint32, (
-        f"Expected uint32 k_codes, got {tq.k_codes.dtype}"
-    )
+    assert (
+        tq.k_codes.dtype == mx.uint32
+    ), f"Expected uint32 k_codes, got {tq.k_codes.dtype}"

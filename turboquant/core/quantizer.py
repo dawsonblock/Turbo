@@ -193,6 +193,7 @@ def quantize_groups(
 
 _DEQUANT_CACHE = {}
 
+
 def _inner_dequantize_groups(
     packed: mx.array,
     scales: mx.array,
@@ -203,7 +204,7 @@ def _inner_dequantize_groups(
     q_max: int,
     n_groups: int,
     d_pack: int,
-    d_g: int
+    d_g: int,
 ) -> mx.array:
     unsigned = unpack_codes(packed, d_pack, bits)  # [..., d_pack]
     unsigned = unsigned[..., :d_g]  # crop to group region
@@ -238,8 +239,10 @@ def dequantize_groups(
 
     key = (bits, group_size, d_orig, cpw, q_max, n_groups, d_pack, d_g)
     if key not in _DEQUANT_CACHE:
+
         def fn(p, s):
             return _inner_dequantize_groups(p, s, *key)
+
         _DEQUANT_CACHE[key] = mx.compile(fn, shapeless=False)
 
     return _DEQUANT_CACHE[key](packed, scales)

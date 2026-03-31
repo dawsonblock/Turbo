@@ -109,7 +109,9 @@ class TestGemmaRuntimeSmoke:
 
         assert result["generated_tokens"] > 0, "Dense generation produced no tokens"
         assert len(result["output_text"].strip()) > 0, "Dense output is empty"
-        print(f"\n  [gemma-dense] {result['generated_tokens']} tokens in {result['elapsed_seconds']:.2f}s")
+        print(
+            f"\n  [gemma-dense] {result['generated_tokens']} tokens in {result['elapsed_seconds']:.2f}s"
+        )
         print(f"  output: {result['output_text'][:100]}...")
 
     def test_gemma_turboquant_smoke(
@@ -130,7 +132,9 @@ class TestGemmaRuntimeSmoke:
         assert result["generated_tokens"] > 0, "TQ generation produced no tokens"
         assert len(result["output_text"].strip()) > 0, "TQ output is empty"
         assert result["turboquant_active"], "TurboQuant was not requested"
-        print(f"\n  [gemma-tq] {result['generated_tokens']} tokens in {result['elapsed_seconds']:.2f}s")
+        print(
+            f"\n  [gemma-tq] {result['generated_tokens']} tokens in {result['elapsed_seconds']:.2f}s"
+        )
         print(f"  output: {result['output_text'][:100]}...")
 
     def test_gemma_turboquant_token_count(
@@ -150,7 +154,9 @@ class TestGemmaRuntimeSmoke:
         )
 
         assert result["generated_tokens"] >= 1, "No tokens generated at all"
-        print(f"\n  [gemma-tq-count] requested={target}, got={result['generated_tokens']}")
+        print(
+            f"\n  [gemma-tq-count] requested={target}, got={result['generated_tokens']}"
+        )
 
     def test_gemma_medium_prompt(
         self, gemma_model_and_tokenizer, medium_prompt, decode_settings
@@ -168,5 +174,7 @@ class TestGemmaRuntimeSmoke:
         )
 
         assert result["generated_tokens"] > 0, "Medium prompt TQ generation failed"
-        print(f"\n  [gemma-medium-tq] {result['generated_tokens']} tokens, "
-              f"prompt_len={result['prompt_length']}")
+        print(
+            f"\n  [gemma-medium-tq] {result['generated_tokens']} tokens, "
+            f"prompt_len={result['prompt_length']}"
+        )

@@ -5,10 +5,12 @@ import mlx.core as mx
 
 _kernels = {}
 
+
 def get_kernel_source():
     kernel_path = Path(__file__).parent / "decode_k.metal"
     with open(kernel_path) as f:
         return f.read()
+
 
 def decode_k_metal(
     packed_k: mx.array,
@@ -57,9 +59,9 @@ def decode_k_metal(
             ("TOPK", config.residual_topk),
             ("N_GROUPS", n_groups),
             ("N_WORDS", n_words),
-            ("D_HEAD", d_head)
+            ("D_HEAD", d_head),
         ],
-        stream=mx.gpu
+        stream=mx.gpu,
     )
 
     return out[0]

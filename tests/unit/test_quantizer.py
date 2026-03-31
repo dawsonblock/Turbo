@@ -100,9 +100,9 @@ def test_calibration_reduces_error():
     err_cal = float(mx.mean(mx.abs(x - q_cal.decode(pk_c, sc_c, D))).item())
 
     # Calibrated should be within 2x of dynamic (both should be small)
-    assert err_cal < max(err_dyn * 2, 0.02), (
-        f"Calibrated error {err_cal:.4f} worse than 2× dynamic {err_dyn:.4f}"
-    )
+    assert err_cal < max(
+        err_dyn * 2, 0.02
+    ), f"Calibrated error {err_cal:.4f} worse than 2× dynamic {err_dyn:.4f}"
 
 
 def test_calibration_flag():

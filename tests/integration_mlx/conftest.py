@@ -27,9 +27,7 @@ import pytest
 # Platform / MLX gate
 # ---------------------------------------------------------------------------
 
-_IS_APPLE_SILICON = (
-    platform.system() == "Darwin" and platform.machine() == "arm64"
-)
+_IS_APPLE_SILICON = platform.system() == "Darwin" and platform.machine() == "arm64"
 
 try:
     import mlx.core as mx  # noqa: F401
@@ -55,6 +53,7 @@ pytestmark = pytest.mark.skipif(
     reason=_SKIP_REASON or "",
 )
 
+
 # Register a custom marker so ``-m mlx_integration`` works
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line(
@@ -62,9 +61,11 @@ def pytest_configure(config: pytest.Config) -> None:
         "mlx_integration: marks tests that need Apple Silicon + MLX",
     )
 
+
 # ---------------------------------------------------------------------------
 # Model ID fixtures (env-var gated)
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="session")
 def llama_model_id() -> str:
@@ -92,6 +93,7 @@ def gemma_model_id() -> str:
 # Shared decode settings
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="session")
 def decode_settings() -> dict:
     """Fixed deterministic decode settings used across all runtime tests."""
@@ -105,6 +107,7 @@ def decode_settings() -> dict:
 # ---------------------------------------------------------------------------
 # TurboQuant config fixture
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="session")
 def default_tq_config():
@@ -142,14 +145,17 @@ MEDIUM_PROMPT = (
 LONG_PROMPT = (
     "Below is a technical passage about attention mechanisms in large "
     "language models.\n\n"
-    + ("The transformer architecture relies on multi-head self-attention, "
-       "where each head independently computes scaled dot-product attention "
-       "over queries, keys, and values derived from the input sequence. "
-       "During autoregressive generation, the key and value tensors from "
-       "all previous tokens must be retained in memory, forming the KV "
-       "cache. As the sequence length grows, this cache becomes the "
-       "dominant consumer of GPU or accelerator memory, often exceeding "
-       "the memory used by the model weights themselves. ") * 8
+    + (
+        "The transformer architecture relies on multi-head self-attention, "
+        "where each head independently computes scaled dot-product attention "
+        "over queries, keys, and values derived from the input sequence. "
+        "During autoregressive generation, the key and value tensors from "
+        "all previous tokens must be retained in memory, forming the KV "
+        "cache. As the sequence length grows, this cache becomes the "
+        "dominant consumer of GPU or accelerator memory, often exceeding "
+        "the memory used by the model weights themselves. "
+    )
+    * 8
     + "\n\nBased on the above, what is the primary benefit of compressing "
     "the KV cache during long-context generation?"
 )
@@ -174,6 +180,7 @@ def long_prompt() -> str:
 # Artifact directory fixture
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="session")
 def artifact_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Provide a session-scoped temporary directory for test artifacts."""
@@ -183,6 +190,7 @@ def artifact_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
 # ---------------------------------------------------------------------------
 # Model loading helpers (session-scoped to avoid re-downloading)
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="session")
 def llama_model_and_tokenizer(llama_model_id: str):
