@@ -26,6 +26,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from turboquant.errors import UnsupportedModelError
+
+# Families with an explicit TurboQuant attention wiring and runtime-cert coverage.
+# Any model_family string not in this set will be rejected at the upgrade boundary.
+SUPPORTED_FAMILIES: frozenset[str] = frozenset({"llama", "gemma"})
+
 # ── Event ─────────────────────────────────────────────────────────────────────
 
 

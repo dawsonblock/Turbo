@@ -31,10 +31,11 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from benchmarks.runtime_cert.utils import (
+    build_quality_prompt_result,
+    build_quality_result,
     collect_environment_metadata,
     ensure_artifact_dir,
     load_prompts,
-    now_utc_iso,
     write_json,
 )
 
@@ -179,50 +180,45 @@ def main() -> int:
         )
 
         results.append(
-            {
-                "prompt_id": pid,
-                "prompt_class": args.prompt_class,
-                "n_tokens": n_tokens,
-                "dense_ppl": ppl["dense_ppl"],
-                "tq_ppl": ppl.get("tq_ppl"),
-                "delta_ppl": delta_ppl,
-                "mean_kl": mean_kl,
-                "max_kl": drift.get("max_kl", 0.0),
-                "ppl_pass": ppl_pass,
-                "kl_pass": kl_pass,
-                "pass": row_pass,
-                "ppl_seconds": round(ppl_sec, 2),
-                "drift_seconds": round(drift_sec, 2),
-            }
+            build_quality_prompt_result(
+                prompt_id=pid,
+                prompt_class=args.prompt_class,
+                n_tokens=n_tokens,
+                dense_ppl=ppl["dense_ppl"],
+                tq_ppl=ppl.get("tq_ppl"),
+                delta_ppl=delta_ppl,
+                mean_kl=mean_kl,
+                max_kl=drift.get("max_kl", 0.0),
+                ppl_pass=ppl_pass,
+                kl_pass=kl_pass,
+                row_pass=row_pass,
+                ppl_seconds=ppl_sec,
+                drift_seconds=drift_sec,
+            )
         )
 
-    # Write artifact
-    summary = {
-        "timestamp": now_utc_iso(),
-        "environment": env,
-        "model": args.model,
-        "prompt_class": args.prompt_class,
-        "thresholds": {
+    # Write artifact using the canonical schema builder
+    artifact = build_quality_result(
+        environment=env,
+        model=args.model,
+        prompt_class=args.prompt_class,
+        thresholds={
             "max_delta_ppl": args.max_delta_ppl,
             "max_mean_kl": args.max_mean_kl,
         },
-        "seed": args.seed,
-        "results": results,
-        "all_pass": all_pass,
-        "n_prompts": len(results),
-        "n_pass": sum(1 for r in results if r["pass"]),
-        "n_fail": sum(1 for r in results if not r["pass"]),
-    }
+        seed=args.seed,
+        results=results,
+    )
 
     fname = f"quality_eval_{args.prompt_class}.json"
-    write_json(out_dir / fname, summary)
+    write_json(out_dir / fname, artifact)
     print(f"\nQuality eval written to {out_dir / fname}")
 
-    if all_pass:
-        print(f"✓ ALL {len(results)} prompts passed quality gates")
+    if artifact["all_pass"]:
+        print(f"\u2713 ALL {len(results)} prompts passed quality gates")
         return 0
     else:
-        n_fail = summary["n_fail"]
+        n_fail = artifact["n_fail"]
         print(f"✗ {n_fail}/{len(results)} prompt(s) FAILED quality gates")
         return 1
 

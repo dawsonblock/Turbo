@@ -28,6 +28,7 @@ directly by model files.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Callable
 
 import mlx.core as mx
@@ -252,12 +253,26 @@ def maybe_turboquant_attention(
     """
     if isinstance(keys, TurboQuantKeysView):
         logger.debug(
-            "attention dispatch: TurboQuant streaming path  " "(view %d–%d, H_q=%d)",
+            "attention dispatch: TurboQuant streaming path  "
+            "(view %d\u2013%d, H_q=%d)",
             keys.start,
             keys.end,
             queries.shape[1],
         )
         return turboquant_streaming_attention(queries, keys, scale=scale)
+
+    # Dense-key fallback: only allowed when cache is not a TQ cache.
+    # If the cache object owns a KVCompressor (_impl), TurboQuant was expected
+    # to return a TurboQuantKeysView.  Dense keys here mean the upgrade path
+    # is broken.  Raise unless TQ_DEBUG_DENSE=1 is set explicitly.
+    if hasattr(cache, "_impl") and os.getenv("TQ_DEBUG_DENSE", "0") != "1":
+        raise RuntimeError(
+            "TurboQuant cache active but dense keys received at attention "
+            "dispatch.  update_and_fetch must always return "
+            "TurboQuantKeysView.  This indicates a broken upgrade path.  "
+            "Set TQ_DEBUG_DENSE=1 to allow dense fallback for debugging."
+        )
+
     logger.debug(
         "attention dispatch: dense SDPA fallback  (H_q=%d, T_k=%d)",
         queries.shape[1],
