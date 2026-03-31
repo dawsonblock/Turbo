@@ -11,8 +11,8 @@ import importlib
 import platform
 
 # Minimum and maximum supported MLX versions (exclusive upper bound).
-_MLX_MIN_VERSION = (0, 22, 0)
-_MLX_MAX_VERSION = (1, 0, 0)  # < 1.0.0
+MIN_MLX_VERSION = "0.30.0"
+MAX_MLX_VERSION_EXCLUSIVE = "1.0.0"
 
 
 def _parse_version(ver_str: str) -> tuple[int, ...]:
@@ -97,15 +97,15 @@ def check_mlx_version() -> None:
 
     from turboquant.errors import TurboQuantCompatibilityError
 
-    if ver < _MLX_MIN_VERSION:
+    if ver < _parse_version(MIN_MLX_VERSION):
         raise TurboQuantCompatibilityError(
-            f"TurboQuant requires MLX >= {'.'.join(map(str, _MLX_MIN_VERSION))}, "
+            f"TurboQuant requires MLX >= {MIN_MLX_VERSION}, "
             f"but found {ver_str}. Please upgrade: pip install -U mlx"
         )
-    if ver >= _MLX_MAX_VERSION:
+    if ver >= _parse_version(MAX_MLX_VERSION_EXCLUSIVE):
         raise TurboQuantCompatibilityError(
             f"TurboQuant has not been tested with MLX >= "
-            f"{'.'.join(map(str, _MLX_MAX_VERSION))} (found {ver_str}). "
-            f"Pin to mlx<{'.'.join(map(str, _MLX_MAX_VERSION))} or check for "
+            f"{MAX_MLX_VERSION_EXCLUSIVE} (found {ver_str}). "
+            f"Pin to mlx<{MAX_MLX_VERSION_EXCLUSIVE} or check for "
             f"a TurboQuant update."
         )

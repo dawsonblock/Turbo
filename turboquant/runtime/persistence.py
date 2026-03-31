@@ -1,18 +1,24 @@
-"""
-Durable state persistence for KV buffers.
+"""Internal persistence scaffolding.
+
+TurboQuant does not currently expose a supported public persistence API.
+This module exists only as internal scaffolding for future work and should
+not be relied on as a stable surface.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any
+
+class PersistenceNotSupportedError(NotImplementedError):
+    """Raised when callers attempt to use the unsupported persistence scaffold."""
 
 
-def save_state(state: dict[str, Any], path: str | Path) -> None:
-    """Save state robustly with write-then-rename."""
-    raise NotImplementedError("Persistence API is not supported in the current TurboQuant release.")
+def save_state(*args, **kwargs):
+    raise PersistenceNotSupportedError(
+        "TurboQuant persistence is not a supported public feature in this release."
+    )
 
 
-def load_state(path: str | Path) -> dict[str, Any]:
-    """Load and optionally verify checksum of the state."""
-    raise NotImplementedError("Persistence API is not supported in the current TurboQuant release.")
+def load_state(*args, **kwargs):
+    raise PersistenceNotSupportedError(
+        "TurboQuant persistence is not a supported public feature in this release."
+    )

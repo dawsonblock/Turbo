@@ -25,9 +25,14 @@ TurboQuant compresses the KV cache of transformer models running on Apple Silico
 > Custom Metal kernel integration remains experimental and is not part of the supported default runtime.
 > Supported surface is documented in [docs/supported-surface.md](docs/supported-surface.md). Release gating is documented in [docs/release-checklist.md](docs/release-checklist.md).
 
-### 🚀 **Empirical Memory Compression Benchmark**
+### 🚀 **Illustrative local memory examples**
 
-When evaluated locally, TurboQuant significantly outperforms standard dense caching. Below are local Apple-Silicon memory footprints for a 1024-token sequence (head dimension 128, 2 heads):
+These numbers are local examples intended to show the shape of the compression tradeoff.
+They are not release-certified benchmarks unless matched by saved runtime-certification artifacts
+for the exact commit and hardware used.
+
+The examples below should be read as sanity-check calculations and local observations, not as
+published performance guarantees.
 
 | Type | Precision | Tokens | Total MB | Bytes / Token | Ratio vs Dense |
 |:---|:---:|:---:|:---:|:---:|:---:|
@@ -35,6 +40,9 @@ When evaluated locally, TurboQuant significantly outperforms standard dense cach
 | **TurboQuant** (k=4b, g=64) | 4-bit | 1024 | 0.61 MB | 592 | **3.5x smaller** |
 | **TurboQuant** (k=3b, g=64) | 3-bit | 1024 | 0.57 MB | 560 | **3.7x smaller** |
 | **TurboQuant** (k=2b, g=64) | 2-bit | 1024 | 0.48 MB | 464 | **4.4x smaller** |
+
+Artifact-backed release measurements belong under `artifacts/runtime-cert/<timestamp>/` and should
+be treated as authoritative over any README example.
 
 *Breakdown for 3-bit K, group=64, 1024 tokens:*
 
@@ -376,7 +384,7 @@ docs/
 ## Limitations
 
 - **Quality gated but not yet measured at scale** — `run_quality_eval.py` enforces Δppl ≤ 0.5 and mean_kl ≤ 0.1 gates. Run `make certify-apple-runtime` with model weights to validate.
-- **Gemma + Llama wired** — `turboquant_streaming_attention` is dispatched in both. Adding a new architecture is a [one-function change](docs/integration.md#adding-a-new-model-family).
+- **Gemma- and Llama-family adapter paths exist in this repository. Actual support is established only by successful Apple-Silicon runtime certification for the specific model path being used.** Adding a new architecture is a [one-function change](docs/integration.md#adding-a-new-model-family).
 - **Metal execution requires explicit opt-in** — Apple Silicon native shaders are extremely fast (~1ms execution latency per 1024 token stream) but require opt-in by setting `TQ_USE_METAL=1`. Core native bindings have been aggressively optimized via `mx.compile` for default fallback paths yielding double the fallback speed.
 - **Hadamard is O(d²)** — not a fast butterfly transform. For very large head-dims, `rotation="identity"` is faster with marginally worse compression.
 

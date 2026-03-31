@@ -1,5 +1,9 @@
 """
-TurboQuant — production KV-cache compression for MLX/Apple-Silicon LLMs.
+TurboQuant — research-stage KV-cache compression for selected MLX/Apple-Silicon LLM paths.
+
+This package exposes the supported public surface for the current TurboQuant prototype.
+Do not treat the package-level API as production-certified unless the corresponding
+runtime-certification artifacts have been generated on Apple Silicon.
 
 Public API
 ----------
